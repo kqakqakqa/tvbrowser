@@ -1,40 +1,208 @@
-<!-- // 查表
-// 写下来
-let config = {
-    playingChannelIndex: 0,
-    channels: [
-        {
-            name: "CCTV1",
-            url: "https://tv.cctv.com/live/cctv1/",
-            functionName: ""
-        },
-        {
-            name: "CCTV2",
-            url: "https://tv.cctv.com/live/cctv2/",
-            functionName: ""
-        }
-    ]
-};
-
-let highlightChannelIndex = config.playingChannelIndex;
-
-function highlightChannelMinus() {
-    highlightChannelIndex -= 1;
-}
-
-function highlightChannelPlus() {
-    highlightChannelIndex += 1;
-}
-
-function showMenu() {
-    // document.
-    // 滚动页面如何解决
-} -->
 <html>
 
 <body>
-    <div style="background-color: aliceblue; opacity: 50%; height: 25%; width: 25%; font-size: xx-large;">123123测试测试
+    <div style="position: fixed; background-color: aliceblue;">
+        <button onclick="pressArrowUp()">↑</button>
+        <button onclick="pressArrowDown()">↓</button>
+        <button onclick="pressOK()">○</button>
+        <button onclick="pressBack()">←</button>
+    </div>
+    <div id="channels">
     </div>
 </body>
+
+<script>
+    // 查表
+    // 写下来
+    let config = {
+        playingChannelIndex: 0,
+        channels: [
+            {
+                name: "CCTV1",
+                url: "https://tv.cctv.com/live/cctv1/",
+                functionName: ""
+            },
+            {
+                name: "CCTV2",
+                url: "https://tv.cctv.com/live/cctv2/",
+                functionName: ""
+            },
+            {
+                name: "CCTV3",
+                url: "https://tv.cctv.com/live/cctv3/",
+                functionName: ""
+            },
+            {
+                name: "CCTV4",
+                url: "https://tv.cctv.com/live/cctv4/",
+                functionName: ""
+            },
+            {
+                name: "CCTV5",
+                url: "https://tv.cctv.com/live/cctv5/",
+                functionName: ""
+            },
+            {
+                name: "CCTV7",
+                url: "https://tv.cctv.com/live/cctv7/",
+                functionName: ""
+            },
+            {
+                name: "CCTV8",
+                url: "https://tv.cctv.com/live/cctv8/",
+                functionName: ""
+            }
+        ]
+    };
+
+    let hideMenuTimer, isMenuHidden;
+
+    let highlightChannelIndex = config.playingChannelIndex;
+
+    window.onload = () => {
+        config.channels.forEach(channel => {
+            document.querySelector("#channels").appendChild(new DOMParser().parseFromString(`<div>${channel.name}</div>`, "text/html").querySelector("body>*"))
+        });
+        requestAnimationFrame(() => {
+            highlightChannel(highlightChannelIndex);
+            gotoChannel(highlightChannelIndex);
+            hideMenu();
+        });
+    }
+
+    function pressBack() {
+        let wasMenuHidden = isMenuHidden;
+        hideMenu();
+        if (wasMenuHidden) {
+            return "quit";
+        }
+        return "dontQuit"
+    }
+
+    function pressOK() {
+        let wasMenuHidden = isMenuHidden
+        showMenu();
+        if (wasMenuHidden) return "";
+        gotoChannel(highlightChannelIndex);
+        return config.channels[highlightChannelIndex].url;
+    }
+
+    function pressArrowUp() {
+        arrowOnPress("up");
+    }
+
+    function pressArrowDown() {
+        arrowOnPress("down");
+    }
+
+    function arrowOnPress(s) {
+        let wasMenuHidden = isMenuHidden
+        showMenu();
+        if (wasMenuHidden) return;
+        switch (s) {
+            case "up":
+                highlightChannelMinus();
+                break;
+            case "down":
+                highlightChannelPlus();
+                break;
+        }
+    }
+
+    function highlightChannelMinus() {
+        if (config.channels[highlightChannelIndex - 1]) highlightChannelIndex -= 1;
+        highlightChannel(highlightChannelIndex);
+    }
+
+    function highlightChannelPlus() {
+        if (config.channels[highlightChannelIndex + 1]) highlightChannelIndex += 1;
+        highlightChannel(highlightChannelIndex);
+    }
+
+    function showMenu() {
+        if (hideMenuTimer) clearTimeout(hideMenuTimer);
+        document.querySelector("#channels").classList.remove("hidden");
+        isMenuHidden = false;
+        hideMenuTimer = setTimeout(() => {
+            hideMenu()
+        }, 5000);
+    }
+
+    function hideMenu() {
+        if (hideMenuTimer) clearTimeout(hideMenuTimer);
+        document.querySelector("#channels").classList.add("hidden");
+        isMenuHidden = true;
+    }
+
+    function highlightChannel(i) {
+        showMenu();
+        document.querySelectorAll("div.selected").forEach(e => {
+            e.classList.remove("selected");
+        })
+        let e = document.querySelector("#channels>div:nth-child(" + (i + 1) + ")")
+        e.classList.add("selected");
+        e.scrollIntoView({
+            behavior: "instant",
+            block: "nearest"
+        });
+        e.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+    }
+
+    function gotoChannel(i) {
+        hideMenu();
+        document.querySelectorAll("div.current").forEach(e => {
+            e.classList.remove("current");
+        })
+        let e = document.querySelector("#channels>div:nth-child(" + (i + 1) + ")")
+        e.classList.add("current");
+    }
+</script>
+
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        margin: 0;
+        /* overflow: hidden; */
+    }
+
+    #channels {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        max-width: 33.33vw;
+        transition: transform 500ms;
+        background-color: rgba(0, 0, 0, 0.75);
+        color: white;
+        font-size: 4vmin;
+    }
+
+    #channels.hidden {
+        transform: translateX(-100%);
+    }
+
+    #channels>div {
+        text-align: center;
+        padding-left: 1em;
+        padding-right: 1em;
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+        border: 0.125em solid transparent;
+        word-break: break-all;
+    }
+
+    #channels>div.selected {
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    #channels>div.current {
+        border: 0.125em solid white;
+    }
+</style>
 
 </html>

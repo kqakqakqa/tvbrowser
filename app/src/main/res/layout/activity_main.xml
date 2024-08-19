@@ -21,14 +21,19 @@
             android:id="@+id/webViewBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/transparent">
+            android:background="@android:color/transparent"
+            android:focusable="false"
+            android:focusableInTouchMode="false">
 
         </WebView>
 
         <WebView
             android:id="@+id/webViewTv1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:focusable="false"
+            android:focusableInTouchMode="false">
 
         </WebView>
 
@@ -36,7 +41,9 @@
             android:id="@+id/webViewMenu"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/transparent">
+            android:background="@android:color/transparent"
+            android:focusable="false"
+            android:focusableInTouchMode="false">
 
         </WebView>
     </FrameLayout>
